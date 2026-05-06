@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comparo — Compare Everything</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+
+<nav>
+  <div class="logo">Comp<span>a</span>ro</div>
+  <ul class="nav-links">
+    <li><button class="active" onclick="setNav(this)">Compare</button></li>
+    <li><button onclick="setNav(this)">Trending</button></li>
+    <li><button onclick="setNav(this)">History</button></li>
+    <li><button onclick="setNav(this)">Alerts</button></li>
+  </ul>
+</nav>
+
+<div class="hero">
+  <div class="hero-badge"><span class="dot"></span> Live Price Comparison</div>
+  <h1>Compare prices.<br><span class="highlight">Save every time.</span></h1>
+  <p>Products, rides, food delivery — all in one place. Instantly.</p>
+</div>
+
+<div class="category-tabs">
+  <button class="tab-btn active" onclick="setCategory(this,'all')"><span class="icon">⚡</span> All</button>
+  <button class="tab-btn" onclick="setCategory(this,'products')"><span class="icon">📦</span> Products</button>
+  <button class="tab-btn" onclick="setCategory(this,'rides')"><span class="icon">🚗</span> Rides</button>
+  <button class="tab-btn" onclick="setCategory(this,'food')"><span class="icon">🍔</span> Food Delivery</button>
+  <button class="tab-btn" onclick="setCategory(this,'groceries')"><span class="icon">🛒</span> Groceries</button>
+</div>
+
+<div class="search-section">
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder='Search e.g. "iPhone 15", "Airport ride", "Pizza"…' onkeydown="if(event.key==='Enter') doSearch()">
+    <button class="search-btn" onclick="doSearch()">Compare →</button>
+  </div>
+  <div class="popular-row" id="popularRow">
+    <button class="pop-chip" onclick="quickSearch('iPhone 15 Pro')">iPhone 15 Pro</button>
+    <button class="pop-chip" onclick="quickSearch('Airport Ride')">✈️ Airport Ride</button>
+    <button class="pop-chip" onclick="quickSearch('Pizza Delivery')">🍕 Pizza</button>
+    <button class="pop-chip" onclick="quickSearch('Samsung TV 55 inch')">📺 Samsung TV</button>
+    <button class="pop-chip" onclick="quickSearch('Nike Air Max')">👟 Nike Air Max</button>
+  </div>
+</div>
+
+<div class="main" id="mainContent">
+  <div class="empty-state" id="emptyState">
+    <div class="big-icon">🔍</div>
+    <h3>What are you looking for?</h3>
+    <p>Search any product, ride, or food item above to compare prices across platforms.</p>
+  </div>
+</div>
+
+<footer>
+  <span class="brand">Comparo</span> — Compare smarter. Spend less.<br>
+  <span style="font-size:0.75rem;opacity:0.5;margin-top:4px;display:block">© 2024 Comparo. All rights reserved.</span>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
