@@ -1,67 +1,194 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Comparo — Compare Everything</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
-<div class="orb orb1"></div>
-<div class="orb orb2"></div>
+let currentCategory = 'all';
 
-<nav>
-  <div class="logo">Comp<span>a</span>ro</div>
-  <ul class="nav-links">
-    <li><button class="active" onclick="setNav(this)">Compare</button></li>
-    <li><button onclick="setNav(this)">Trending</button></li>
-    <li><button onclick="setNav(this)">History</button></li>
-    <li><button onclick="setNav(this)">Alerts</button></li>
-  </ul>
-</nav>
+function setNav(btn) {
+  document.querySelectorAll('.nav-links button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
 
-<div class="hero">
-  <div class="hero-badge"><span class="dot"></span> Live Price Comparison</div>
-  <h1>Compare prices.<br><span class="highlight">Save every time.</span></h1>
-  <p>Products, rides, food delivery — all in one place. Instantly.</p>
-</div>
+function setCategory(btn, cat) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentCategory = cat;
+}
 
-<div class="category-tabs">
-  <button class="tab-btn active" onclick="setCategory(this,'all')"><span class="icon">⚡</span> All</button>
-  <button class="tab-btn" onclick="setCategory(this,'products')"><span class="icon">📦</span> Products</button>
-  <button class="tab-btn" onclick="setCategory(this,'rides')"><span class="icon">🚗</span> Rides</button>
-  <button class="tab-btn" onclick="setCategory(this,'food')"><span class="icon">🍔</span> Food Delivery</button>
-  <button class="tab-btn" onclick="setCategory(this,'groceries')"><span class="icon">🛒</span> Groceries</button>
-</div>
+function quickSearch(term) {
+  document.getElementById('searchInput').value = term;
+  doSearch();
+}
 
-<div class="search-section">
-  <div class="search-bar">
-    <input type="text" id="searchInput" placeholder='Search e.g. "iPhone 15", "Airport ride", "Pizza"…' onkeydown="if(event.key==='Enter') doSearch()">
-    <button class="search-btn" onclick="doSearch()">Compare →</button>
-  </div>
-  <div class="popular-row" id="popularRow">
-    <button class="pop-chip" onclick="quickSearch('iPhone 15 Pro')">iPhone 15 Pro</button>
-    <button class="pop-chip" onclick="quickSearch('Airport Ride')">✈️ Airport Ride</button>
-    <button class="pop-chip" onclick="quickSearch('Pizza Delivery')">🍕 Pizza</button>
-    <button class="pop-chip" onclick="quickSearch('Samsung TV 55 inch')">📺 Samsung TV</button>
-    <button class="pop-chip" onclick="quickSearch('Nike Air Max')">👟 Nike Air Max</button>
-  </div>
-</div>
+function formatPrice(p) {
+  return p.toLocaleString('en-IN');
+}
 
-<div class="main" id="mainContent">
-  <div class="empty-state" id="emptyState">
-    <div class="big-icon">🔍</div>
-    <h3>What are you looking for?</h3>
-    <p>Search any product, ride, or food item above to compare prices across platforms.</p>
-  </div>
-</div>
+async function doSearch() {
+  const query = document.getElementById('searchInput').value.trim();
+  if (!query) return;
 
-<footer>
-  <span class="brand">Comparo</span> — Compare smarter. Spend less.<br>
-  <span style="font-size:0.75rem;opacity:0.5;margin-top:4px;display:block">© 2024 Comparo. All rights reserved.</span>
-</footer>
+  document.getElementById('popularRow').style.display = 'none';
 
-<script src="script.js"></script>
-</body>
-</html>
+  document.getElementById('mainContent').innerHTML = `
+    <div style="text-align:center; padding: 80px 20px; color: var(--muted);">
+      <div style="font-size: 2.5rem; margin-bottom: 16px;">⚡</div>
+      <h3 style="font-family:'Syne',sans-serif; color: var(--text); margin-bottom: 8px;">Searching across platforms...</h3>
+      <p>Finding the best prices for "${query}"</p>
+    </div>`;
+
+  const encodedQuery = encodeURIComponent(query);
+
+  const prompt = `You are a price comparison engine for India. The user searched for: "${query}". Category: ${currentCategory}.
+
+Return ONLY a JSON object (no markdown, no explanation, no backticks):
+{
+  "title": "product name",
+  "type": "products",
+  "results": [
+    {
+      "platform": "Platform Name",
+      "icon": "emoji",
+      "type": "platform type",
+      "price": 1234,
+      "rating": 4.2,
+      "tags": ["tag1", "tag2"],
+      "color": "#hexcolor",
+      "best": false,
+      "url": "https://www.amazon.in/s?k=product+name"
+    }
+  ]
+}
+
+Rules:
+- Give 4-6 realistic Indian platforms like Amazon, Flipkart, Meesho, Myntra, Swiggy, Zomato, Blinkit, BigBasket, Uber, Ola, Rapido
+- Prices must be realistic in Indian Rupees
+- Set best:true only for the cheapest one
+- For url, use the real search URL of that platform with the product name as search query:
+  Amazon: https://www.amazon.in/s?k=${encodedQuery}
+  Flipkart: https://www.flipkart.com/search?q=${encodedQuery}
+  Meesho: https://www.meesho.com/search?q=${encodedQuery}
+  Myntra: https://www.myntra.com/${encodedQuery}
+  Swiggy: https://www.swiggy.com/search?query=${encodedQuery}
+  Zomato: https://www.zomato.com/search?q=${encodedQuery}
+  Blinkit: https://blinkit.com/s/?q=${encodedQuery}
+  BigBasket: https://www.bigbasket.com/ps/?q=${encodedQuery}
+  Uber: https://m.uber.com/looking
+  Ola: https://book.olacabs.com/
+  Rapido: https://rapido.bike/
+- Return valid JSON only, nothing else`;
+
+  try {
+    const response = await fetch("/.netlify/functions/ask", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt: prompt })
+    });
+
+    const data = await response.json();
+    let text = data.choices[0].message.content;
+    text = text.replace(/```json|```/g, '').trim();
+    const result = JSON.parse(text);
+    renderResults(result);
+
+  } catch (err) {
+    document.getElementById('mainContent').innerHTML = `
+      <div style="text-align:center; padding: 80px 20px; color: var(--muted);">
+        <div style="font-size: 2.5rem; margin-bottom: 16px;">⚠️</div>
+        <h3 style="font-family:'Syne',sans-serif; color: var(--text); margin-bottom: 8px;">Something went wrong</h3>
+        <p>Could not fetch prices. Please try again.</p>
+        <button class="pop-chip" style="margin-top:20px" onclick="resetSearch()">← Try Again</button>
+      </div>`;
+  }
+}
+
+function renderResults(data) {
+  const prices = data.results.map(r => r.price);
+  const minP = Math.min(...prices);
+  const maxP = Math.max(...prices);
+  const savings = maxP - minP;
+  const currency = '₹';
+
+  const html = `
+    <div style="animation: fadeUp 0.5s ease both;">
+      <div class="section-label">
+        <h2>${data.title}</h2>
+        <span class="pill">${data.results.length} platforms</span>
+      </div>
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-label">Best Price</div>
+          <div class="stat-value green">${currency}${formatPrice(minP)}</div>
+          <div class="stat-sub">${data.results.find(r=>r.price===minP).platform}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Max You'd Pay</div>
+          <div class="stat-value" style="color:var(--red)">${currency}${formatPrice(maxP)}</div>
+          <div class="stat-sub">${data.results.find(r=>r.price===maxP).platform}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">You Can Save</div>
+          <div class="stat-value yellow">${currency}${formatPrice(savings)}</div>
+          <div class="stat-sub">by choosing wisely</div>
+        </div>
+      </div>
+      <div class="price-summary">
+        <h3>Price Breakdown</h3>
+        <div class="bar-chart">
+          ${data.results.map(r => {
+            const pct = Math.round((r.price / maxP) * 100);
+            const isBest = r.price === minP;
+            return `
+            <div class="bar-row">
+              <div class="bar-label">${r.platform}</div>
+              <div class="bar-track">
+                <div class="bar-fill" style="width:${pct}%; background: linear-gradient(90deg, ${isBest ? '#10b981' : r.color+'99'}, ${isBest ? '#34d399' : r.color+'55'});">
+                  ${isBest ? '🏆 Best' : ''}
+                </div>
+              </div>
+              <div class="bar-value">${currency}${formatPrice(r.price)}</div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+      <div class="section-label">
+        <h2>All Options</h2>
+        <span class="pill">Tap to visit</span>
+      </div>
+      <div class="compare-grid">
+        ${data.results.map((r,i) => `
+          <div class="compare-card ${r.best ? 'best-deal' : ''}" style="animation-delay:${i*0.07}s">
+            ${r.best ? '<div class="best-badge">🏆 Best Deal</div>' : ''}
+            <div class="card-platform">
+              <div class="platform-icon" style="background: ${r.color}22; border: 1px solid ${r.color}44">${r.icon}</div>
+              <div>
+                <div class="platform-name">${r.platform}</div>
+                <div class="platform-type">${r.type}</div>
+              </div>
+            </div>
+            <div class="card-price"><span class="currency">${currency}</span>${formatPrice(r.price)}</div>
+            <div class="card-meta">
+              ${r.tags.map(t => `<span class="meta-tag ${t.includes('min')||t.includes('fast')||t.includes('Prime') ? 'fast' : t.includes('OFF')||t.includes('Deal')||t.includes('Best') ? 'discount' : ''}">${t}</span>`).join('')}
+            </div>
+            <hr class="card-divider">
+            <div class="card-footer">
+              <div class="card-rating"><span class="stars">★</span> ${r.rating}</div>
+              <button class="book-btn" onclick="window.open('${r.url}', '_blank')">Visit →</button>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+      <div style="text-align:center; margin-top:40px;">
+        <button class="pop-chip" onclick="resetSearch()">← New Search</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('mainContent').innerHTML = html;
+}
+
+function resetSearch() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('popularRow').style.display = 'flex';
+  document.getElementById('mainContent').innerHTML = `
+    <div class="empty-state" id="emptyState">
+      <div class="big-icon">🔍</div>
+      <h3>What are you looking for?</h3>
+      <p>Search any product, ride, or food item above to compare prices across platforms.</p>
+    </div>`;
+}
