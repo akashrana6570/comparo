@@ -20,6 +20,10 @@ function formatPrice(p) {
   return p.toLocaleString('en-IN');
 }
 
+function visitPlatform(url) {
+  window.open(url, '_blank');
+}
+
 async function doSearch() {
   const query = document.getElementById('searchInput').value.trim();
   if (!query) return;
@@ -60,7 +64,7 @@ Rules:
 - Give 4-6 realistic Indian platforms like Amazon, Flipkart, Meesho, Myntra, Swiggy, Zomato, Blinkit, BigBasket, Uber, Ola, Rapido
 - Prices must be realistic in Indian Rupees
 - Set best:true only for the cheapest one
-- For url, use the real search URL of that platform with the product name as search query:
+- For url use these real search links:
   Amazon: https://www.amazon.in/s?k=${encodedQuery}
   Flipkart: https://www.flipkart.com/search?q=${encodedQuery}
   Meesho: https://www.meesho.com/search?q=${encodedQuery}
@@ -105,6 +109,47 @@ function renderResults(data) {
   const savings = maxP - minP;
   const currency = '₹';
 
+  const cards = data.results.map((r, i) => {
+    const isBest = r.price === minP;
+    const pct = Math.round((r.price / maxP) * 100);
+    const url = r.url || '#';
+    return `
+      <div class="compare-card ${isBest ? 'best-deal' : ''}" style="animation-delay:${i*0.07}s">
+        ${isBest ? '<div class="best-badge">🏆 Best Deal</div>' : ''}
+        <div class="card-platform">
+          <div class="platform-icon" style="background: ${r.color}22; border: 1px solid ${r.color}44">${r.icon}</div>
+          <div>
+            <div class="platform-name">${r.platform}</div>
+            <div class="platform-type">${r.type}</div>
+          </div>
+        </div>
+        <div class="card-price"><span class="currency">${currency}</span>${formatPrice(r.price)}</div>
+        <div class="card-meta">
+          ${r.tags.map(t => `<span class="meta-tag ${t.includes('min')||t.includes('fast')||t.includes('Prime') ? 'fast' : t.includes('OFF')||t.includes('Deal')||t.includes('Best') ? 'discount' : ''}">${t}</span>`).join('')}
+        </div>
+        <hr class="card-divider">
+        <div class="card-footer">
+          <div class="card-rating"><span class="stars">★</span> ${r.rating}</div>
+          <button class="book-btn" onclick="visitPlatform('${url}')">Visit →</button>
+        </div>
+      </div>`;
+  }).join('');
+
+  const bars = data.results.map(r => {
+    const pct = Math.round((r.price / maxP) * 100);
+    const isBest = r.price === minP;
+    return `
+      <div class="bar-row">
+        <div class="bar-label">${r.platform}</div>
+        <div class="bar-track">
+          <div class="bar-fill" style="width:${pct}%; background: linear-gradient(90deg, ${isBest ? '#10b981' : r.color+'99'}, ${isBest ? '#34d399' : r.color+'55'});">
+            ${isBest ? '🏆 Best' : ''}
+          </div>
+        </div>
+        <div class="bar-value">${currency}${formatPrice(r.price)}</div>
+      </div>`;
+  }).join('');
+
   const html = `
     <div style="animation: fadeUp 0.5s ease both;">
       <div class="section-label">
@@ -130,55 +175,18 @@ function renderResults(data) {
       </div>
       <div class="price-summary">
         <h3>Price Breakdown</h3>
-        <div class="bar-chart">
-          ${data.results.map(r => {
-            const pct = Math.round((r.price / maxP) * 100);
-            const isBest = r.price === minP;
-            return `
-            <div class="bar-row">
-              <div class="bar-label">${r.platform}</div>
-              <div class="bar-track">
-                <div class="bar-fill" style="width:${pct}%; background: linear-gradient(90deg, ${isBest ? '#10b981' : r.color+'99'}, ${isBest ? '#34d399' : r.color+'55'});">
-                  ${isBest ? '🏆 Best' : ''}
-                </div>
-              </div>
-              <div class="bar-value">${currency}${formatPrice(r.price)}</div>
-            </div>`;
-          }).join('')}
-        </div>
+        <div class="bar-chart">${bars}</div>
       </div>
       <div class="section-label">
         <h2>All Options</h2>
         <span class="pill">Tap to visit</span>
       </div>
-      <div class="compare-grid">
-        ${data.results.map((r,i) => `
-          <div class="compare-card ${r.best ? 'best-deal' : ''}" style="animation-delay:${i*0.07}s">
-            ${r.best ? '<div class="best-badge">🏆 Best Deal</div>' : ''}
-            <div class="card-platform">
-              <div class="platform-icon" style="background: ${r.color}22; border: 1px solid ${r.color}44">${r.icon}</div>
-              <div>
-                <div class="platform-name">${r.platform}</div>
-                <div class="platform-type">${r.type}</div>
-              </div>
-            </div>
-            <div class="card-price"><span class="currency">${currency}</span>${formatPrice(r.price)}</div>
-            <div class="card-meta">
-              ${r.tags.map(t => `<span class="meta-tag ${t.includes('min')||t.includes('fast')||t.includes('Prime') ? 'fast' : t.includes('OFF')||t.includes('Deal')||t.includes('Best') ? 'discount' : ''}">${t}</span>`).join('')}
-            </div>
-            <hr class="card-divider">
-            <div class="card-footer">
-              <div class="card-rating"><span class="stars">★</span> ${r.rating}</div>
-              <button class="book-btn" onclick="window.open('${r.url}', '_blank')">Visit →</button>
-            </div>
-          </div>
-        `).join('')}
-      </div>
+      <div class="compare-grid">${cards}</div>
       <div style="text-align:center; margin-top:40px;">
         <button class="pop-chip" onclick="resetSearch()">← New Search</button>
       </div>
-    </div>
-  `;
+    </div>`;
+
   document.getElementById('mainContent').innerHTML = html;
 }
 
