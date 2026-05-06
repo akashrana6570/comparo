@@ -33,6 +33,8 @@ async function doSearch() {
       <p>Finding the best prices for "${query}"</p>
     </div>`;
 
+  const encodedQuery = encodeURIComponent(query);
+
   const prompt = `You are a price comparison engine for India. The user searched for: "${query}". Category: ${currentCategory}.
 
 Return ONLY a JSON object (no markdown, no explanation, no backticks):
@@ -48,7 +50,8 @@ Return ONLY a JSON object (no markdown, no explanation, no backticks):
       "rating": 4.2,
       "tags": ["tag1", "tag2"],
       "color": "#hexcolor",
-      "best": false
+      "best": false,
+      "url": "https://www.amazon.in/s?k=product+name"
     }
   ]
 }
@@ -57,6 +60,18 @@ Rules:
 - Give 4-6 realistic Indian platforms like Amazon, Flipkart, Meesho, Myntra, Swiggy, Zomato, Blinkit, BigBasket, Uber, Ola, Rapido
 - Prices must be realistic in Indian Rupees
 - Set best:true only for the cheapest one
+- For url, use the real search URL of that platform with the product name as search query:
+  Amazon: https://www.amazon.in/s?k=${encodedQuery}
+  Flipkart: https://www.flipkart.com/search?q=${encodedQuery}
+  Meesho: https://www.meesho.com/search?q=${encodedQuery}
+  Myntra: https://www.myntra.com/${encodedQuery}
+  Swiggy: https://www.swiggy.com/search?query=${encodedQuery}
+  Zomato: https://www.zomato.com/search?q=${encodedQuery}
+  Blinkit: https://blinkit.com/s/?q=${encodedQuery}
+  BigBasket: https://www.bigbasket.com/ps/?q=${encodedQuery}
+  Uber: https://m.uber.com/looking
+  Ola: https://book.olacabs.com/
+  Rapido: https://rapido.bike/
 - Return valid JSON only, nothing else`;
 
   try {
@@ -134,7 +149,7 @@ function renderResults(data) {
       </div>
       <div class="section-label">
         <h2>All Options</h2>
-        <span class="pill">Tap to view</span>
+        <span class="pill">Tap to visit</span>
       </div>
       <div class="compare-grid">
         ${data.results.map((r,i) => `
@@ -154,7 +169,7 @@ function renderResults(data) {
             <hr class="card-divider">
             <div class="card-footer">
               <div class="card-rating"><span class="stars">★</span> ${r.rating}</div>
-              <button class="book-btn">View →</button>
+              <button class="book-btn" onclick="window.open('${r.url}', '_blank')">Visit →</button>
             </div>
           </div>
         `).join('')}
