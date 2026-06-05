@@ -27,7 +27,7 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
 .orb2 { width: 500px; height: 500px; background: var(--accent2); bottom: -150px; right: -150px; }
 nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 18px 40px; background: rgba(10,10,15,0.85); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
 .logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.6rem; letter-spacing: -0.5px; background: linear-gradient(135deg, #fff 0%, var(--accent2) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.logo span { color: var(--accent); -webkit-text-fill-color: var(--accent); }
+.logo span { -webkit-text-fill-color: var(--accent); }
 .nav-links { display: flex; gap: 8px; list-style: none; }
 .nav-links button { background: none; border: none; color: var(--muted); font-family: 'DM Sans', sans-serif; font-size: 0.9rem; cursor: pointer; padding: 8px 16px; border-radius: 8px; transition: all 0.2s; }
 .nav-links button:hover, .nav-links button.active { background: var(--surface2); color: var(--text); }
@@ -61,7 +61,7 @@ nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center
 .compare-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 20px; transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s; animation: fadeUp 0.5s ease both; position: relative; overflow: hidden; }
 .compare-card:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 12px 40px rgba(124,58,237,0.15); }
 .compare-card.best-deal { border-color: var(--green); }
-.best-badge { position: absolute; top: 14px; right: 14px; background: var(--green); color: #fff; font-size: 0.7rem; font-weight: 500; padding: 4px 10px; border-radius: 100px; letter-spacing: 0.5px; }
+.best-badge { position: absolute; top: 14px; right: 14px; background: var(--green); color: #fff; font-size: 0.7rem; font-weight: 500; padding: 4px 10px; border-radius: 100px; }
 .card-platform { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
 .platform-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; background: var(--surface2); }
 .platform-name { font-weight: 500; font-size: 1rem; }
@@ -99,6 +99,26 @@ nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center
 .popular-row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 20px; }
 .pop-chip { padding: 8px 18px; border-radius: 100px; border: 1px solid var(--border); background: var(--surface); color: var(--muted); font-size: 0.85rem; cursor: pointer; transition: all 0.2s; font-family: 'DM Sans', sans-serif; }
 .pop-chip:hover { border-color: var(--accent2); color: var(--accent2); background: rgba(6,182,212,0.08); }
+
+/* TRENDING STYLES */
+.trending-section { margin-bottom: 48px; }
+.trending-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.trending-header h2 { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 700; }
+.trending-badge { background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.3); color: var(--accent3); font-size: 0.72rem; padding: 3px 10px; border-radius: 100px; }
+.trending-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+.trending-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px; transition: all 0.2s; cursor: pointer; position: relative; }
+.trending-card:hover { border-color: var(--accent2); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(6,182,212,0.1); }
+.trending-rank { position: absolute; top: 14px; left: 14px; width: 24px; height: 24px; border-radius: 6px; background: var(--surface2); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; color: var(--muted); }
+.trending-rank.top { background: linear-gradient(135deg, var(--accent3), #f97316); color: #fff; }
+.trending-info { margin-top: 8px; padding-top: 8px; }
+.trending-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem; margin-bottom: 6px; padding-left: 32px; }
+.trending-price { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--green); }
+.trending-platform { font-size: 0.78rem; color: var(--muted); margin-top: 4px; }
+.trending-tag { display: inline-block; font-size: 0.7rem; padding: 3px 8px; border-radius: 5px; background: rgba(6,182,212,0.1); color: var(--accent2); margin-top: 8px; }
+.trending-tabs { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+.trend-tab { padding: 8px 18px; border-radius: 100px; border: 1px solid var(--border); background: var(--surface); color: var(--muted); font-size: 0.82rem; cursor: pointer; transition: all 0.2s; font-family: 'DM Sans', sans-serif; }
+.trend-tab.active { background: rgba(6,182,212,0.15); border-color: var(--accent2); color: var(--accent2); }
+
 footer { position: relative; z-index: 1; text-align: center; padding: 32px; border-top: 1px solid var(--border); color: var(--muted); font-size: 0.82rem; }
 footer .brand { color: var(--text); font-weight: 500; }
 @media (max-width: 600px) {
@@ -117,46 +137,97 @@ footer .brand { color: var(--text); font-weight: 500; }
 <nav>
   <div class="logo">Comp<span>a</span>ro</div>
   <ul class="nav-links">
-    <li><button class="active" onclick="setNav(this)">Compare</button></li>
-    <li><button onclick="setNav(this)">Trending</button></li>
-    <li><button onclick="setNav(this)">History</button></li>
-    <li><button onclick="setNav(this)">Alerts</button></li>
+    <li><button class="active" onclick="showTab('compare', this)">Compare</button></li>
+    <li><button onclick="showTab('trending', this)">Trending</button></li>
+    <li><button onclick="showTab('history', this)">History</button></li>
+    <li><button onclick="showTab('alerts', this)">Alerts</button></li>
   </ul>
 </nav>
 
-<div class="hero">
-  <div class="hero-badge"><span class="dot"></span> Live Price Comparison</div>
-  <h1>Compare prices.<br><span class="highlight">Save every time.</span></h1>
-  <p>Products, rides, food delivery — all in one place. Instantly.</p>
-</div>
-
-<div class="category-tabs">
-  <button class="tab-btn active" onclick="setCategory(this,'all')"><span class="icon">⚡</span> All</button>
-  <button class="tab-btn" onclick="setCategory(this,'products')"><span class="icon">📦</span> Products</button>
-  <button class="tab-btn" onclick="setCategory(this,'rides')"><span class="icon">🚗</span> Rides</button>
-  <button class="tab-btn" onclick="setCategory(this,'food')"><span class="icon">🍔</span> Food Delivery</button>
-  <button class="tab-btn" onclick="setCategory(this,'groceries')"><span class="icon">🛒</span> Groceries</button>
-</div>
-
-<div class="search-section">
-  <div class="search-bar">
-    <input type="text" id="searchInput" placeholder='Search e.g. "iPhone 15", "Airport ride", "Pizza"…' onkeydown="if(event.key==='Enter') doSearch()">
-    <button class="search-btn" onclick="doSearch()">Compare →</button>
+<!-- COMPARE TAB -->
+<div id="tab-compare">
+  <div class="hero">
+    <div class="hero-badge"><span class="dot"></span> Live Price Comparison</div>
+    <h1>Compare prices.<br><span class="highlight">Save every time.</span></h1>
+    <p>Products, rides, food delivery — all in one place. Instantly.</p>
   </div>
-  <div class="popular-row" id="popularRow">
-    <button class="pop-chip" onclick="quickSearch('iPhone 15 Pro')">iPhone 15 Pro</button>
-    <button class="pop-chip" onclick="quickSearch('Airport Ride')">✈️ Airport Ride</button>
-    <button class="pop-chip" onclick="quickSearch('Pizza Delivery')">🍕 Pizza</button>
-    <button class="pop-chip" onclick="quickSearch('Samsung TV 55 inch')">📺 Samsung TV</button>
-    <button class="pop-chip" onclick="quickSearch('Nike Air Max')">👟 Nike Air Max</button>
+  <div class="category-tabs">
+    <button class="tab-btn active" onclick="setCategory(this,'all')"><span class="icon">⚡</span> All</button>
+    <button class="tab-btn" onclick="setCategory(this,'products')"><span class="icon">📦</span> Products</button>
+    <button class="tab-btn" onclick="setCategory(this,'rides')"><span class="icon">🚗</span> Rides</button>
+    <button class="tab-btn" onclick="setCategory(this,'food')"><span class="icon">🍔</span> Food Delivery</button>
+    <button class="tab-btn" onclick="setCategory(this,'groceries')"><span class="icon">🛒</span> Groceries</button>
+  </div>
+  <div class="search-section">
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder='Search e.g. "iPhone 15", "Airport ride", "Pizza"…' onkeydown="if(event.key==='Enter') doSearch()">
+      <button class="search-btn" onclick="doSearch()">Compare →</button>
+    </div>
+    <div class="popular-row" id="popularRow">
+      <button class="pop-chip" onclick="quickSearch('iPhone 15 Pro')">iPhone 15 Pro</button>
+      <button class="pop-chip" onclick="quickSearch('Airport Ride')">✈️ Airport Ride</button>
+      <button class="pop-chip" onclick="quickSearch('Pizza Delivery')">🍕 Pizza</button>
+      <button class="pop-chip" onclick="quickSearch('Samsung TV 55 inch')">📺 Samsung TV</button>
+      <button class="pop-chip" onclick="quickSearch('Nike Air Max')">👟 Nike Air Max</button>
+    </div>
+  </div>
+  <div class="main" id="mainContent">
+    <div class="empty-state">
+      <div class="big-icon">🔍</div>
+      <h3>What are you looking for?</h3>
+      <p>Search any product, ride, or food item above to compare prices across platforms.</p>
+    </div>
   </div>
 </div>
 
-<div class="main" id="mainContent">
-  <div class="empty-state" id="emptyState">
-    <div class="big-icon">🔍</div>
-    <h3>What are you looking for?</h3>
-    <p>Search any product, ride, or food item above to compare prices across platforms.</p>
+<!-- TRENDING TAB -->
+<div id="tab-trending" style="display:none">
+  <div class="hero">
+    <div class="hero-badge"><span class="dot"></span> Updated Live</div>
+    <h1>What's <span class="highlight">Trending</span></h1>
+    <p>Lowest prices right now across products, rides & food in India.</p>
+  </div>
+  <div class="main">
+    <div class="trending-tabs">
+      <button class="trend-tab active" onclick="loadTrending('all', this)">⚡ All</button>
+      <button class="trend-tab" onclick="loadTrending('products', this)">📦 Products</button>
+      <button class="trend-tab" onclick="loadTrending('rides', this)">🚗 Rides</button>
+      <button class="trend-tab" onclick="loadTrending('food', this)">🍔 Food</button>
+      <button class="trend-tab" onclick="loadTrending('groceries', this)">🛒 Groceries</button>
+    </div>
+    <div id="trendingContent">
+      <div class="empty-state">
+        <div class="big-icon">🔥</div>
+        <h3>Loading trends...</h3>
+        <p>Fetching the best deals right now.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HISTORY TAB -->
+<div id="tab-history" style="display:none">
+  <div class="hero">
+    <div class="hero-badge"><span class="dot"></span> Your Activity</div>
+    <h1>Search <span class="highlight">History</span></h1>
+    <p>Your recent price comparisons.</p>
+  </div>
+  <div class="main" id="historyContent"></div>
+</div>
+
+<!-- ALERTS TAB -->
+<div id="tab-alerts" style="display:none">
+  <div class="hero">
+    <div class="hero-badge"><span class="dot"></span> Price Alerts</div>
+    <h1>Price <span class="highlight">Alerts</span></h1>
+    <p>Coming soon — get notified when prices drop.</p>
+  </div>
+  <div class="main">
+    <div class="empty-state">
+      <div class="big-icon">🔔</div>
+      <h3>Coming Soon</h3>
+      <p>Set a price limit and we'll alert you when it drops. Login feature required.</p>
+    </div>
   </div>
 </div>
 
@@ -167,6 +238,32 @@ footer .brand { color: var(--text); font-weight: 500; }
 
 <script>
 let currentCategory = 'all';
+let searchHistory = JSON.parse(localStorage.getItem('comparo_history') || '[]');
+
+const platformURLs = q => ({
+  'Amazon':    'https://www.amazon.in/s?k=' + q,
+  'Flipkart':  'https://www.flipkart.com/search?q=' + q,
+  'Meesho':    'https://www.meesho.com/search?q=' + q,
+  'Myntra':    'https://www.myntra.com/' + q,
+  'Swiggy':    'https://www.swiggy.com/search?query=' + q,
+  'Zomato':    'https://www.zomato.com/search?q=' + q,
+  'Blinkit':   'https://blinkit.com/s/?q=' + q,
+  'BigBasket': 'https://www.bigbasket.com/ps/?q=' + q,
+  'Uber':      'https://m.uber.com/looking',
+  'Ola':       'https://book.olacabs.com/',
+  'Rapido':    'https://rapido.bike/'
+});
+
+function showTab(tab, btn) {
+  ['compare','trending','history','alerts'].forEach(t => {
+    document.getElementById('tab-' + t).style.display = 'none';
+  });
+  document.getElementById('tab-' + tab).style.display = 'block';
+  document.querySelectorAll('.nav-links button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if (tab === 'trending') loadTrending('all', document.querySelector('.trend-tab'));
+  if (tab === 'history') renderHistory();
+}
 
 function setNav(btn) {
   document.querySelectorAll('.nav-links button').forEach(b => b.classList.remove('active'));
@@ -184,8 +281,18 @@ function quickSearch(term) {
   doSearch();
 }
 
-function formatPrice(p) {
-  return p.toLocaleString('en-IN');
+function formatPrice(p) { return p.toLocaleString('en-IN'); }
+
+async function callAI(prompt) {
+  const response = await fetch('/.netlify/functions/ask', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prompt })
+  });
+  const data = await response.json();
+  let text = data.choices[0].message.content;
+  text = text.replace(/```json|```/g, '').trim();
+  return JSON.parse(text);
 }
 
 async function doSearch() {
@@ -194,78 +301,37 @@ async function doSearch() {
 
   document.getElementById('popularRow').style.display = 'none';
   document.getElementById('mainContent').innerHTML = `
-    <div style="text-align:center; padding: 80px 20px; color: var(--muted);">
-      <div style="font-size: 2.5rem; margin-bottom: 16px;">⚡</div>
-      <h3 style="font-family:'Syne',sans-serif; color: var(--text); margin-bottom: 8px;">Searching across platforms...</h3>
+    <div style="text-align:center;padding:80px 20px;color:var(--muted)">
+      <div style="font-size:2.5rem;margin-bottom:16px">⚡</div>
+      <h3 style="font-family:'Syne',sans-serif;color:var(--text);margin-bottom:8px">Searching across platforms...</h3>
       <p>Finding the best prices for "${query}"</p>
     </div>`;
 
-  const encodedQuery = encodeURIComponent(query);
-
-  // URLs built in JS — never from AI
-  const platformURLs = {
-    'Amazon':     'https://www.amazon.in/s?k=' + encodedQuery,
-    'Flipkart':   'https://www.flipkart.com/search?q=' + encodedQuery,
-    'Meesho':     'https://www.meesho.com/search?q=' + encodedQuery,
-    'Myntra':     'https://www.myntra.com/' + encodedQuery,
-    'Swiggy':     'https://www.swiggy.com/search?query=' + encodedQuery,
-    'Zomato':     'https://www.zomato.com/search?q=' + encodedQuery,
-    'Blinkit':    'https://blinkit.com/s/?q=' + encodedQuery,
-    'BigBasket':  'https://www.bigbasket.com/ps/?q=' + encodedQuery,
-    'Uber':       'https://m.uber.com/looking',
-    'Ola':        'https://book.olacabs.com/',
-    'Rapido':     'https://rapido.bike/'
-  };
-
-  const prompt = `You are a price comparison engine for India. The user searched for: "${query}". Category: ${currentCategory}.
-
-Return ONLY a JSON object (no markdown, no explanation, no backticks):
-{
-  "title": "product name",
-  "results": [
-    {
-      "platform": "Platform Name",
-      "icon": "emoji",
-      "type": "platform type",
-      "price": 1234,
-      "rating": 4.2,
-      "tags": ["tag1", "tag2"],
-      "color": "#hexcolor"
-    }
-  ]
-}
-
-Rules:
-- Give 4-6 realistic Indian platforms from: Amazon, Flipkart, Meesho, Myntra, Swiggy, Zomato, Blinkit, BigBasket, Uber, Ola, Rapido
-- Prices must be realistic in Indian Rupees
-- Return valid JSON only, nothing else
-- Do NOT include any url field`;
+  const eq = encodeURIComponent(query);
+  const urls = platformURLs(eq);
 
   try {
-    const response = await fetch("/.netlify/functions/ask", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt })
-    });
+    const result = await callAI(`You are a price comparison engine for India. User searched: "${query}". Category: ${currentCategory}.
+Return ONLY JSON (no markdown, no backticks):
+{"title":"product name","results":[{"platform":"Platform Name","icon":"emoji","type":"platform type","price":1234,"rating":4.2,"tags":["tag1"],"color":"#hexcolor"}]}
+Rules: 4-6 platforms from Amazon/Flipkart/Meesho/Myntra/Swiggy/Zomato/Blinkit/BigBasket/Uber/Ola/Rapido. Realistic INR prices. No url field.`);
 
-    const data = await response.json();
-    let text = data.choices[0].message.content;
-    text = text.replace(/```json|```/g, '').trim();
-    const result = JSON.parse(text);
-
-    // Attach URLs from our JS map, not from AI
     result.results = result.results.map(r => ({
       ...r,
-      url: platformURLs[r.platform] || ('https://www.google.com/search?q=' + encodedQuery + '+' + encodeURIComponent(r.platform))
+      url: urls[r.platform] || ('https://www.google.com/search?q=' + eq + '+' + encodeURIComponent(r.platform))
     }));
 
-    renderResults(result);
+    // Save to history
+    searchHistory.unshift({ query, time: Date.now(), results: result.results.length, bestPrice: Math.min(...result.results.map(r => r.price)), bestPlatform: result.results.reduce((a,b) => a.price < b.price ? a : b).platform });
+    if (searchHistory.length > 20) searchHistory = searchHistory.slice(0, 20);
+    localStorage.setItem('comparo_history', JSON.stringify(searchHistory));
 
+    renderResults(result);
   } catch (err) {
     document.getElementById('mainContent').innerHTML = `
-      <div style="text-align:center; padding: 80px 20px; color: var(--muted);">
-        <div style="font-size: 2.5rem; margin-bottom: 16px;">⚠️</div>
-        <h3 style="font-family:'Syne',sans-serif; color: var(--text); margin-bottom: 8px;">Something went wrong</h3>
+      <div style="text-align:center;padding:80px 20px;color:var(--muted)">
+        <div style="font-size:2.5rem;margin-bottom:16px">⚠️</div>
+        <h3 style="font-family:'Syne',sans-serif;color:var(--text);margin-bottom:8px">Something went wrong</h3>
         <p>Could not fetch prices. Please try again.</p>
         <button class="pop-chip" style="margin-top:20px" onclick="resetSearch()">← Try Again</button>
       </div>`;
@@ -286,15 +352,10 @@ function renderResults(data) {
         ${isBest ? '<div class="best-badge">🏆 Best Deal</div>' : ''}
         <div class="card-platform">
           <div class="platform-icon" style="background:${r.color}22;border:1px solid ${r.color}44">${r.icon}</div>
-          <div>
-            <div class="platform-name">${r.platform}</div>
-            <div class="platform-type">${r.type}</div>
-          </div>
+          <div><div class="platform-name">${r.platform}</div><div class="platform-type">${r.type}</div></div>
         </div>
         <div class="card-price"><span class="currency">${currency}</span>${formatPrice(r.price)}</div>
-        <div class="card-meta">
-          ${r.tags.map(t => `<span class="meta-tag ${t.includes('min')||t.includes('fast')||t.includes('Prime')?'fast':t.includes('OFF')||t.includes('Deal')||t.includes('Best')?'discount':''}">${t}</span>`).join('')}
-        </div>
+        <div class="card-meta">${r.tags.map(t=>`<span class="meta-tag ${t.includes('min')||t.includes('fast')||t.includes('Prime')?'fast':t.includes('OFF')||t.includes('Deal')?'discount':''}">${t}</span>`).join('')}</div>
         <hr class="card-divider">
         <div class="card-footer">
           <div class="card-rating"><span class="stars">★</span> ${r.rating}</div>
@@ -306,65 +367,165 @@ function renderResults(data) {
   const bars = data.results.map(r => {
     const pct = Math.round((r.price / maxP) * 100);
     const isBest = r.price === minP;
-    return `
-      <div class="bar-row">
-        <div class="bar-label">${r.platform}</div>
-        <div class="bar-track">
-          <div class="bar-fill" style="width:${pct}%;background:linear-gradient(90deg,${isBest?'#10b981':r.color+'99'},${isBest?'#34d399':r.color+'55'})">
-            ${isBest ? '🏆 Best' : ''}
-          </div>
-        </div>
-        <div class="bar-value">${currency}${formatPrice(r.price)}</div>
-      </div>`;
+    return `<div class="bar-row"><div class="bar-label">${r.platform}</div><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:linear-gradient(90deg,${isBest?'#10b981':r.color+'99'},${isBest?'#34d399':r.color+'55'})">${isBest?'🏆 Best':''}</div></div><div class="bar-value">${currency}${formatPrice(r.price)}</div></div>`;
   }).join('');
 
   document.getElementById('mainContent').innerHTML = `
     <div style="animation:fadeUp 0.5s ease both">
-      <div class="section-label">
-        <h2>${data.title}</h2>
-        <span class="pill">${data.results.length} platforms</span>
-      </div>
+      <div class="section-label"><h2>${data.title}</h2><span class="pill">${data.results.length} platforms</span></div>
       <div class="stats-row">
-        <div class="stat-card">
-          <div class="stat-label">Best Price</div>
-          <div class="stat-value green">${currency}${formatPrice(minP)}</div>
-          <div class="stat-sub">${data.results.find(r=>r.price===minP).platform}</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Max You'd Pay</div>
-          <div class="stat-value" style="color:var(--red)">${currency}${formatPrice(maxP)}</div>
-          <div class="stat-sub">${data.results.find(r=>r.price===maxP).platform}</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">You Can Save</div>
-          <div class="stat-value yellow">${currency}${formatPrice(savings)}</div>
-          <div class="stat-sub">by choosing wisely</div>
-        </div>
+        <div class="stat-card"><div class="stat-label">Best Price</div><div class="stat-value green">${currency}${formatPrice(minP)}</div><div class="stat-sub">${data.results.find(r=>r.price===minP).platform}</div></div>
+        <div class="stat-card"><div class="stat-label">Max You'd Pay</div><div class="stat-value" style="color:var(--red)">${currency}${formatPrice(maxP)}</div><div class="stat-sub">${data.results.find(r=>r.price===maxP).platform}</div></div>
+        <div class="stat-card"><div class="stat-label">You Can Save</div><div class="stat-value yellow">${currency}${formatPrice(savings)}</div><div class="stat-sub">by choosing wisely</div></div>
       </div>
-      <div class="price-summary">
-        <h3>Price Breakdown</h3>
-        <div class="bar-chart">${bars}</div>
-      </div>
-      <div class="section-label">
-        <h2>All Options</h2>
-        <span class="pill">Tap to visit</span>
-      </div>
+      <div class="price-summary"><h3>Price Breakdown</h3><div class="bar-chart">${bars}</div></div>
+      <div class="section-label"><h2>All Options</h2><span class="pill">Tap to visit</span></div>
       <div class="compare-grid">${cards}</div>
-      <div style="text-align:center;margin-top:40px">
-        <button class="pop-chip" onclick="resetSearch()">← New Search</button>
-      </div>
+      <div style="text-align:center;margin-top:40px"><button class="pop-chip" onclick="resetSearch()">← New Search</button></div>
     </div>`;
 }
 
 function resetSearch() {
   document.getElementById('searchInput').value = '';
   document.getElementById('popularRow').style.display = 'flex';
-  document.getElementById('mainContent').innerHTML = `
-    <div class="empty-state">
-      <div class="big-icon">🔍</div>
-      <h3>What are you looking for?</h3>
-      <p>Search any product, ride, or food item above to compare prices across platforms.</p>
+  document.getElementById('mainContent').innerHTML = `<div class="empty-state"><div class="big-icon">🔍</div><h3>What are you looking for?</h3><p>Search any product, ride, or food item above to compare prices across platforms.</p></div>`;
+}
+
+// TRENDING
+async function loadTrending(category, btn) {
+  document.querySelectorAll('.trend-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  document.getElementById('trendingContent').innerHTML = `
+    <div style="text-align:center;padding:60px 20px;color:var(--muted)">
+      <div style="font-size:2rem;margin-bottom:12px">🔥</div>
+      <p>Loading trending deals...</p>
     </div>`;
+
+  const categoryMap = {
+    all: 'products, rides, food, groceries',
+    products: 'electronics and gadgets',
+    rides: 'cab and bike rides',
+    food: 'food delivery',
+    groceries: 'groceries and daily essentials'
+  };
+
+  try {
+    const result = await callAI(`You are a trending deals engine for India. Show what is trending right now in category: ${categoryMap[category]}.
+Return ONLY JSON (no markdown, no backticks):
+{
+  "sections": [
+    {
+      "title": "section name",
+      "icon": "emoji",
+      "items": [
+        {"name":"product name","platform":"Platform","icon":"emoji","price":1234,"originalPrice":1500,"rating":4.2,"tag":"deal tag","color":"#hexcolor"}
+      ]
+    }
+  ]
+}
+Rules:
+- 2-3 sections like "🔥 Hot Deals", "⚡ Flash Sales", "🚗 Best Rides Now"
+- 4-5 items per section
+- Realistic Indian prices in INR
+- originalPrice should be higher than price to show discount
+- Platforms: Amazon, Flipkart, Meesho, Myntra, Swiggy, Zomato, Blinkit, BigBasket, Uber, Ola, Rapido
+- Return valid JSON only`);
+
+    const eq_map = {};
+    let html = '';
+    result.sections.forEach(section => {
+      const items = section.items.map((item, i) => {
+        const eq = encodeURIComponent(item.name);
+        const urls = platformURLs(eq);
+        const url = urls[item.platform] || ('https://www.google.com/search?q=' + eq);
+        const discount = item.originalPrice ? Math.round((1 - item.price/item.originalPrice)*100) : 0;
+        return `
+          <div class="trending-card" style="animation-delay:${i*0.06}s">
+            <div class="trending-rank ${i < 3 ? 'top' : ''}">${i+1}</div>
+            <div class="trending-info">
+              <div class="trending-name">${item.name}</div>
+              <div class="trending-price">₹${formatPrice(item.price)}</div>
+              ${item.originalPrice ? `<div style="font-size:0.78rem;color:var(--muted);text-decoration:line-through;margin-top:2px">₹${formatPrice(item.originalPrice)}</div>` : ''}
+              <div class="trending-platform">${item.icon} ${item.platform}</div>
+              <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
+                ${item.tag ? `<span class="trending-tag">${item.tag}</span>` : ''}
+                ${discount > 0 ? `<span style="font-size:0.7rem;padding:3px 8px;border-radius:5px;background:rgba(16,185,129,0.1);color:var(--green)">${discount}% OFF</span>` : ''}
+              </div>
+              <div style="margin-top:12px">
+                <a class="visit-btn" href="${url}" target="_blank" rel="noopener noreferrer" style="font-size:0.8rem;padding:6px 14px">Buy Now →</a>
+              </div>
+            </div>
+          </div>`;
+      }).join('');
+
+      html += `
+        <div class="trending-section">
+          <div class="trending-header">
+            <h2>${section.icon} ${section.title}</h2>
+            <span class="trending-badge">LIVE</span>
+          </div>
+          <div class="trending-grid">${items}</div>
+        </div>`;
+    });
+
+    document.getElementById('trendingContent').innerHTML = html;
+  } catch(err) {
+    document.getElementById('trendingContent').innerHTML = `
+      <div class="empty-state">
+        <div class="big-icon">⚠️</div>
+        <h3>Could not load trends</h3>
+        <p>Please try again.</p>
+        <button class="pop-chip" style="margin-top:20px" onclick="loadTrending('${category}', document.querySelector('.trend-tab.active'))">Retry</button>
+      </div>`;
+  }
+}
+
+// HISTORY
+function renderHistory() {
+  const el = document.getElementById('historyContent');
+  if (!searchHistory.length) {
+    el.innerHTML = `<div class="empty-state"><div class="big-icon">📭</div><h3>No history yet</h3><p>Your searches will appear here.</p></div>`;
+    return;
+  }
+  const items = searchHistory.map((h, i) => {
+    const time = new Date(h.time);
+    const timeStr = time.toLocaleDateString('en-IN', { day:'numeric', month:'short' }) + ' · ' + time.toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit' });
+    return `
+      <div class="compare-card" style="animation-delay:${i*0.05}s;cursor:pointer" onclick="quickSearchFromHistory('${h.query.replace(/'/g,"\\'")}')">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <div style="font-weight:500;font-size:1rem">${h.query}</div>
+            <div style="font-size:0.78rem;color:var(--muted);margin-top:4px">${timeStr} · ${h.results} platforms compared</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-family:'Syne',sans-serif;font-weight:700;color:var(--green)">₹${formatPrice(h.bestPrice)}</div>
+            <div style="font-size:0.75rem;color:var(--muted)">${h.bestPlatform}</div>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+
+  el.innerHTML = `
+    <div style="animation:fadeUp 0.5s ease both">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+        <div class="section-label" style="margin-bottom:0"><h2>Recent Searches</h2><span class="pill">${searchHistory.length} searches</span></div>
+        <button class="pop-chip" onclick="clearHistory()" style="color:var(--red);border-color:var(--red)">Clear All</button>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">${items}</div>
+    </div>`;
+}
+
+function quickSearchFromHistory(query) {
+  showTab('compare', document.querySelectorAll('.nav-links button')[0]);
+  document.getElementById('searchInput').value = query;
+  doSearch();
+}
+
+function clearHistory() {
+  searchHistory = [];
+  localStorage.removeItem('comparo_history');
+  renderHistory();
 }
 </script>
 </body>
