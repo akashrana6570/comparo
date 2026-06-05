@@ -20,16 +20,6 @@ function formatPrice(p) {
   return p.toLocaleString('en-IN');
 }
 
-function visitPlatform(url) {
-  const a = document.createElement('a');
-  a.href = url;
-  a.target = '_blank';
-  a.rel = 'noopener noreferrer';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-}
-
 async function doSearch() {
   const query = document.getElementById('searchInput').value.trim();
   if (!query) return;
@@ -117,8 +107,7 @@ function renderResults(data) {
 
   const cards = data.results.map((r, i) => {
     const isBest = r.price === minP;
-    // FIX: Store URL in data attribute to avoid special characters breaking onclick
-    const safeUrl = (r.url || '#');
+    const safeUrl = r.url || '#';
     return `
       <div class="compare-card ${isBest ? 'best-deal' : ''}" style="animation-delay:${i*0.07}s">
         ${isBest ? '<div class="best-badge">🏆 Best Deal</div>' : ''}
@@ -136,7 +125,7 @@ function renderResults(data) {
         <hr class="card-divider">
         <div class="card-footer">
           <div class="card-rating"><span class="stars">★</span> ${r.rating}</div>
-          <button class="book-btn" data-url="${safeUrl}" onclick="visitPlatform(this.dataset.url)">Visit →</button>
+          <a class="book-btn" href="${safeUrl}" target="_blank" rel="noopener noreferrer">Visit →</a>
         </div>
       </div>`;
   }).join('');
