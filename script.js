@@ -117,7 +117,8 @@ function renderResults(data) {
 
   const cards = data.results.map((r, i) => {
     const isBest = r.price === minP;
-    const url = (r.url || '#').replace(/'/g, '%27');
+    // FIX: Store URL in data attribute to avoid special characters breaking onclick
+    const safeUrl = (r.url || '#');
     return `
       <div class="compare-card ${isBest ? 'best-deal' : ''}" style="animation-delay:${i*0.07}s">
         ${isBest ? '<div class="best-badge">🏆 Best Deal</div>' : ''}
@@ -135,7 +136,7 @@ function renderResults(data) {
         <hr class="card-divider">
         <div class="card-footer">
           <div class="card-rating"><span class="stars">★</span> ${r.rating}</div>
-          <button class="book-btn" onclick="visitPlatform('${url}')">Visit →</button>
+          <button class="book-btn" data-url="${safeUrl}" onclick="visitPlatform(this.dataset.url)">Visit →</button>
         </div>
       </div>`;
   }).join('');
