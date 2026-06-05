@@ -1037,19 +1037,25 @@ function generateMockResults(query) {
         { name: 'Flipkart', icon: '🛍️', color: '#1F40FB' },
         { name: 'Meesho', icon: '👗', color: '#FF6B9D' },
         { name: 'Myntra', icon: '👠', color: '#1F40FB' },
-        { name: 'Swiggy', icon: '🍔', color: '#FF9800' }
+        { name: 'Blinkit', icon: '⚡', color: '#FFD700' },
+        { name: 'BigBasket', icon: '🛒', color: '#E74C3C' }
     ];
 
     const basePrice = Math.floor(Math.random() * 40000) + 5000;
-    const results = platforms.slice(0, 4 + Math.floor(Math.random() * 2)).map(p => ({
-        platform: p.name,
-        icon: p.icon,
-        type: 'Online',
-        price: basePrice + Math.floor(Math.random() * 5000),
-        rating: (3 + Math.random() * 2).toFixed(1),
-        tags: ['Free Shipping', 'Prime', '2-day delivery'].slice(0, 2),
-        color: p.color
-    }));
+    
+    // Generate results for ALL platforms with proper prices
+    const results = platforms.map(p => {
+        const priceVariation = Math.floor(Math.random() * 8000) - 4000; // -4000 to +4000
+        return {
+            platform: p.name,
+            icon: p.icon,
+            type: 'Online Store',
+            price: Math.max(basePrice + priceVariation, 999), // Ensure minimum price
+            rating: (3.5 + Math.random() * 1.5).toFixed(1),
+            tags: ['Free Shipping', 'Fast Delivery', 'Deals'].slice(0, Math.floor(Math.random() * 3) + 1),
+            color: p.color
+        };
+    });
 
     return {
         title: query,
