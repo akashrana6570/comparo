@@ -125,7 +125,7 @@ function renderResults(data) {
         <hr class="card-divider">
         <div class="card-footer">
           <div class="card-rating"><span class="stars">★</span> ${r.rating}</div>
-          <a class="book-btn" href="${url}" target="_blank" rel="noopener noreferrer">Visit →</a>
+          <a class="book-btn" href="${url}">Visit →</a>
         </div>
       </div>`;
   }).join('');
