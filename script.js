@@ -35,6 +35,20 @@ async function doSearch() {
 
   const encodedQuery = encodeURIComponent(query);
 
+  const urls = {
+    Amazon: `https://www.amazon.in/s?k=${encodedQuery}`,
+    Flipkart: `https://www.flipkart.com/search?q=${encodedQuery}`,
+    Meesho: `https://www.meesho.com/search?q=${encodedQuery}`,
+    Myntra: `https://www.myntra.com/${encodedQuery}`,
+    Swiggy: `https://www.swiggy.com/search?query=${encodedQuery}`,
+    Zomato: `https://www.zomato.com/search?q=${encodedQuery}`,
+    Blinkit: `https://blinkit.com/s/?q=${encodedQuery}`,
+    BigBasket: `https://www.bigbasket.com/ps/?q=${encodedQuery}`,
+    Uber: `https://m.uber.com/looking`,
+    Ola: `https://book.olacabs.com/`,
+    Rapido: `https://rapido.bike/`
+  };
+
   const prompt = `You are a price comparison engine for India. The user searched for: "${query}". Category: ${currentCategory}.
 
 Return ONLY a JSON object (no markdown, no explanation, no backticks):
@@ -49,9 +63,7 @@ Return ONLY a JSON object (no markdown, no explanation, no backticks):
       "price": 1234,
       "rating": 4.2,
       "tags": ["tag1", "tag2"],
-      "color": "#hexcolor",
-      "best": false,
-      "url": "https://www.amazon.in/s?k=product+name"
+      "color": "#hexcolor"
     }
   ]
 }
@@ -59,20 +71,8 @@ Return ONLY a JSON object (no markdown, no explanation, no backticks):
 Rules:
 - Give 4-6 realistic Indian platforms like Amazon, Flipkart, Meesho, Myntra, Swiggy, Zomato, Blinkit, BigBasket, Uber, Ola, Rapido
 - Prices must be realistic in Indian Rupees
-- Set best:true only for the cheapest one
-- For url use these real search links:
-  Amazon: https://www.amazon.in/s?k=${encodedQuery}
-  Flipkart: https://www.flipkart.com/search?q=${encodedQuery}
-  Meesho: https://www.meesho.com/search?q=${encodedQuery}
-  Myntra: https://www.myntra.com/${encodedQuery}
-  Swiggy: https://www.swiggy.com/search?query=${encodedQuery}
-  Zomato: https://www.zomato.com/search?q=${encodedQuery}
-  Blinkit: https://blinkit.com/s/?q=${encodedQuery}
-  BigBasket: https://www.bigbasket.com/ps/?q=${encodedQuery}
-  Uber: https://m.uber.com/looking
-  Ola: https://book.olacabs.com/
-  Rapido: https://rapido.bike/
-- Return valid JSON only, nothing else`;
+- Return valid JSON only, nothing else
+- Do NOT include url field, it will be added automatically`;
 
   try {
     const response = await fetch("/.netlify/functions/ask", {
@@ -85,6 +85,13 @@ Rules:
     let text = data.choices[0].message.content;
     text = text.replace(/```json|```/g, '').trim();
     const result = JSON.parse(text);
+
+    // Attach URLs in JS, not from AI
+    result.results = result.results.map(r => ({
+      ...r,
+      url: urls[r.platform] || `https://www.google.com/search?q=${encodedQuery}+${encodeURIComponent(r.platform)}`
+    }));
+
     renderResults(result);
 
   } catch (err) {
@@ -107,7 +114,6 @@ function renderResults(data) {
 
   const cards = data.results.map((r, i) => {
     const isBest = r.price === minP;
-    const safeUrl = r.url || '#';
     return `
       <div class="compare-card ${isBest ? 'best-deal' : ''}" style="animation-delay:${i*0.07}s">
         ${isBest ? '<div class="best-badge">🏆 Best Deal</div>' : ''}
@@ -125,7 +131,7 @@ function renderResults(data) {
         <hr class="card-divider">
         <div class="card-footer">
           <div class="card-rating"><span class="stars">★</span> ${r.rating}</div>
-          <a class="book-btn" href="${safeUrl}" target="_blank" rel="noopener noreferrer">Visit →</a>
+          <a class="book-btn" href="${r.url}" target="_blank" rel="noopener noreferrer">Visit →</a>
         </div>
       </div>`;
   }).join('');
