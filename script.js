@@ -20,10 +20,6 @@ function formatPrice(p) {
   return p.toLocaleString('en-IN');
 }
 
-function visitPlatform(url) {
-  window.open(url, '_blank');
-}
-
 async function doSearch() {
   const query = document.getElementById('searchInput').value.trim();
   if (!query) return;
@@ -111,7 +107,6 @@ function renderResults(data) {
 
   const cards = data.results.map((r, i) => {
     const isBest = r.price === minP;
-    const pct = Math.round((r.price / maxP) * 100);
     const url = r.url || '#';
     return `
       <div class="compare-card ${isBest ? 'best-deal' : ''}" style="animation-delay:${i*0.07}s">
@@ -130,7 +125,7 @@ function renderResults(data) {
         <hr class="card-divider">
         <div class="card-footer">
           <div class="card-rating"><span class="stars">★</span> ${r.rating}</div>
-          <button class="book-btn" onclick="visitPlatform('${url}')">Visit →</button>
+          <a class="book-btn" href="${url}" target="_blank" rel="noopener noreferrer">Visit →</a>
         </div>
       </div>`;
   }).join('');
