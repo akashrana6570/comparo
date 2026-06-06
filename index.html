@@ -420,20 +420,20 @@ async function handleSignup() {
     document.getElementById('verifySubtitle').textContent = `Enter the 6-digit code sent to ${email}`;
     document.getElementById('otpSent').style.display = 'block';
   } catch(e) {
-    return showErr('signupError', '\u274C Failed to send OTP. Check your EmailJS setup.');
+    return showErr('signupError', e.message);
   }
 
   toggleAuth('verify');
 }
 
 async function sendOTPEmail(email, name, otp) {
-  // Using EmailJS free tier — replace with your own keys at emailjs.com
   const response = await fetch('/.netlify/functions/sendotp', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-   body: JSON.stringify({ email: email, name: name, otp: generatedOTP })
+    body: JSON.stringify({ email: email, name: name, otp: otp })
   });
-  const txt = await response.text(); if (!response.ok) throw new Error(txt);
+  const txt = await response.text();
+  if (!response.ok) throw new Error(txt);
 }
 
 function otpNext(input, index) {
