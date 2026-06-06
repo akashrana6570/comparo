@@ -15,7 +15,10 @@ exports.handler = async (event) => {
       hostname: 'api.emailjs.com',
       path: '/api/v1.0/email/send',
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Content-Length': payload.length }
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(payload)
+      }
     }, (res) => {
       let data = '';
       res.on('data', chunk => data += chunk);
