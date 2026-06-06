@@ -203,11 +203,6 @@ footer .brand { color: var(--text); font-weight: 500; }
       <div class="success-msg" id="otpSent">✅ Code sent! Check your email (also check spam)</div>
       <button class="auth-btn" onclick="verifyOTP()">Verify & Create Account</button>
       <div class="error-msg" id="otpError"></div>
-      <div style="text-align:center;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">
-        <div style="font-size:0.85rem;color:var(--muted);margin-bottom:10px">Didn't receive the code?</div>
-        <button id="resendOTPBtn" class="pop-chip" onclick="resendOTP()" style="background:rgba(6,182,212,0.1);color:var(--accent2);border-color:var(--accent2)">Resend OTP</button>
-        <div id="otpTimerDisp" style="font-size:0.8rem;color:var(--muted);margin-top:8px"></div>
-      </div>
       <div class="toggle-auth"><button onclick="toggleAuth('signup')" style="color:var(--muted)">← Go back</button></div>
     </div>
 
@@ -425,65 +420,25 @@ async function handleSignup() {
     document.getElementById('verifySubtitle').textContent = `Enter the 6-digit code sent to ${email}`;
     document.getElementById('otpSent').style.display = 'block';
   } catch(e) {
-    // Fallback: show OTP on screen for demo
-    document.getElementById('verifySubtitle').textContent = `Demo mode: Your OTP is ${generatedOTP}`;
-    document.getElementById('otpSent').style.display = 'block';
+    return showErr('signupError', '❌ Failed to send OTP: ' + e.message);
   }
 
   toggleAuth('verify');
 }
 
 async function sendOTPEmail(email, name, otp) {
+  // Using EmailJS free tier — replace with your own keys at emailjs.com
   const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      service_id: 'service_gjcasld',
-      template_id: 'template_pbxpqg4',
-      user_id: '0ra58-BTu4ENry2VB',
-      template_params: { to_email: email, to_name: name, passcode: otp }
+      service_id: 'YOUR_SERVICE_ID',
+      template_id: 'YOUR_TEMPLATE_ID',
+      user_id: 'YOUR_PUBLIC_KEY',
+      template_params: { to_email: email, to_name: name, otp_code: otp }
     })
   });
-  const txt = await response.text();
-  console.log('[EmailJS]', response.status, txt);
-  if (!response.ok) throw new Error('EmailJS ' + response.status + ': ' + txt);
-}
-
-// OTP timer state
-let otpTimer = null, otpTimeLeft = 0;
-
-function startOTPTimer() {
-  otpTimeLeft = 60;
-  const btn = document.getElementById('resendOTPBtn');
-  const disp = document.getElementById('otpTimerDisp');
-  if (btn) { btn.disabled = true; btn.style.opacity = '0.5'; }
-  if (otpTimer) clearInterval(otpTimer);
-  otpTimer = setInterval(() => {
-    otpTimeLeft--;
-    if (disp) disp.textContent = otpTimeLeft > 0 ? 'Resend in ' + otpTimeLeft + 's' : '';
-    if (otpTimeLeft <= 0) {
-      clearInterval(otpTimer); otpTimer = null;
-      if (btn) { btn.disabled = false; btn.style.opacity = '1'; }
-    }
-  }, 1000);
-}
-
-async function resendOTP() {
-  if (otpTimeLeft > 0 || !pendingUser) return;
-  generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
-  const btn = document.getElementById('resendOTPBtn');
-  const orig = btn.textContent;
-  btn.disabled = true; btn.textContent = 'Sending...';
-  try {
-    await sendOTPEmail(pendingUser.email, pendingUser.name, generatedOTP);
-    document.querySelectorAll('.otp-box').forEach(b => b.value = '');
-    document.getElementById('otpSent').style.display = 'block';
-    startOTPTimer();
-  } catch(e) {
-    document.getElementById('otpError').textContent = '❌ Failed to resend. Try again.';
-    document.getElementById('otpError').style.display = 'block';
-  }
-  btn.textContent = orig; btn.disabled = false;
+  if (!response.ok) throw new Error('Email failed');
 }
 
 function otpNext(input, index) {
