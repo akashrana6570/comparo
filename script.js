@@ -78,6 +78,8 @@ async function sendOTPEmail(email, name, otp) {
   const TEMPLATE_ID = 'template_pbxpqg4';
   const PUBLIC_KEY = '0ra58-BTu4ENry2VB';
 
+  console.log('Sending OTP:', otp, 'to:', email);
+
   const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -88,21 +90,18 @@ async function sendOTPEmail(email, name, otp) {
       template_params: {
         to_email: email,
         to_name: name,
-        otp_code: otp,
-        otp_message: `Your Comparo verification code is: ${otp}`
+        passcode: otp
       }
     })
   });
 
   if (!response.ok) {
     const error = await response.text();
-    console.error('EmailJS API Error:', error);
+    console.error('EmailJS Error:', error);
     throw new Error('Failed to send OTP email');
   }
 
-  const result = await response.json();
-  console.log('✅ Email sent successfully!');
-  return result;
+  return await response.json();
 }
 
 function startOTPTimer() {
