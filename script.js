@@ -1,203 +1,278 @@
-let currentCategory = 'all';
+const ADMIN = { name: 'Akash Rajput', email: 'akash@comparo.com', password: 'Rajputboys', isAdmin: true };
 
-function setNav(btn) {
-  document.querySelectorAll('.nav-links button').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
+let currentUser = null;
+let pendingUser = null;
+let generatedOTP = null;
+let allUsers = JSON.parse(localStorage.getItem('comparo_users') || '[]');
+
+let otpTimer = null;
+let otpTimeRemaining = 0;
+const OTP_TIMEOUT = 60;
+
+window.addEventListener('load', () => {
+  const saved = localStorage.getItem('comparo_session');
+  if (saved) {
+    currentUser = JSON.parse(saved);
+    updateNavUI();
+  } else {
+    document.getElementById('authModal').style.display = 'flex';
+    toggleAuth('login');
+  }
+});
+
+function toggleAuth(form) {
+  document.getElementById('signupForm').style.display = 'none';
+  document.getElementById('loginForm').style.display = 'none';
+  document.getElementById('verifyForm').style.display = 'none';
+  document.getElementById(form + 'Form').style.display = 'block';
+  clearErrors();
 }
 
-function setCategory(btn, cat) {
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  currentCategory = cat;
+function clearErrors() {
+  ['signupError', 'loginError', 'otpError'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
 }
 
-function quickSearch(term) {
-  document.getElementById('searchInput').value = term;
-  doSearch();
-}
-
-function formatPrice(p) {
-  return p.toLocaleString('en-IN');
-}
-
-async function doSearch() {
-  const query = document.getElementById('searchInput').value.trim();
-  if (!query) return;
-
-  document.getElementById('popularRow').style.display = 'none';
-
-  document.getElementById('mainContent').innerHTML = `
-    <div style="text-align:center; padding: 80px 20px; color: var(--muted);">
-      <div style="font-size: 2.5rem; margin-bottom: 16px;">⚡</div>
-      <h3 style="font-family:'Syne',sans-serif; color: var(--text); margin-bottom: 8px;">Searching across platforms...</h3>
-      <p>Finding the best prices for "${query}"</p>
-    </div>`;
-
-  const encodedQuery = encodeURIComponent(query);
-
-  const urls = {
-    Amazon: `https://www.amazon.in/s?k=${encodedQuery}`,
-    Flipkart: `https://www.flipkart.com/search?q=${encodedQuery}`,
-    Meesho: `https://www.meesho.com/search?q=${encodedQuery}`,
-    Myntra: `https://www.myntra.com/${encodedQuery}`,
-    Swiggy: `https://www.swiggy.com/search?query=${encodedQuery}`,
-    Zomato: `https://www.zomato.com/search?q=${encodedQuery}`,
-    Blinkit: `https://blinkit.com/s/?q=${encodedQuery}`,
-    BigBasket: `https://www.bigbasket.com/ps/?q=${encodedQuery}`,
-    Uber: `https://m.uber.com/looking`,
-    Ola: `https://book.olacabs.com/`,
-    Rapido: `https://rapido.bike/`
-  };
-
-  const prompt = `You are a price comparison engine for India. The user searched for: "${query}". Category: ${currentCategory}.
-
-Return ONLY a JSON object (no markdown, no explanation, no backticks):
-{
-  "title": "product name",
-  "type": "products",
-  "results": [
-    {
-      "platform": "Platform Name",
-      "icon": "emoji",
-      "type": "platform type",
-      "price": 1234,
-      "rating": 4.2,
-      "tags": ["tag1", "tag2"],
-      "color": "#hexcolor"
-    }
-  ]
-}
-
-Rules:
-- Give 4-6 realistic Indian platforms like Amazon, Flipkart, Meesho, Myntra, Swiggy, Zomato, Blinkit, BigBasket, Uber, Ola, Rapido
-- Prices must be realistic in Indian Rupees
-- Return valid JSON only, nothing else
-- Do NOT include url field, it will be added automatically`;
-
-  try {
-    const response = await fetch("/.netlify/functions/ask", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt: prompt })
-    });
-
-    const data = await response.json();
-    let text = data.choices[0].message.content;
-    text = text.replace(/```json|```/g, '').trim();
-    const result = JSON.parse(text);
-
-    // Attach URLs in JS, not from AI
-    result.results = result.results.map(r => ({
-      ...r,
-      url: urls[r.platform] || `https://www.google.com/search?q=${encodedQuery}+${encodeURIComponent(r.platform)}`
-    }));
-
-    renderResults(result);
-
-  } catch (err) {
-    document.getElementById('mainContent').innerHTML = `
-      <div style="text-align:center; padding: 80px 20px; color: var(--muted);">
-        <div style="font-size: 2.5rem; margin-bottom: 16px;">⚠️</div>
-        <h3 style="font-family:'Syne',sans-serif; color: var(--text); margin-bottom: 8px;">Something went wrong</h3>
-        <p>Could not fetch prices. Please try again.</p>
-        <button class="pop-chip" style="margin-top:20px" onclick="resetSearch()">← Try Again</button>
-      </div>`;
+function showErr(id, msg) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.textContent = msg;
+    el.style.display = 'block';
   }
 }
 
-function renderResults(data) {
-  const prices = data.results.map(r => r.price);
-  const minP = Math.min(...prices);
-  const maxP = Math.max(...prices);
-  const savings = maxP - minP;
-  const currency = '₹';
+async function handleSignup() {
+  const name = document.getElementById('signupName').value.trim();
+  const email = document.getElementById('signupEmail').value.trim();
+  const password = document.getElementById('signupPassword').value;
 
-  const cards = data.results.map((r, i) => {
-    const isBest = r.price === minP;
-    return `
-      <div class="compare-card ${isBest ? 'best-deal' : ''}" style="animation-delay:${i*0.07}s">
-        ${isBest ? '<div class="best-badge">🏆 Best Deal</div>' : ''}
-        <div class="card-platform">
-          <div class="platform-icon" style="background: ${r.color}22; border: 1px solid ${r.color}44">${r.icon}</div>
-          <div>
-            <div class="platform-name">${r.platform}</div>
-            <div class="platform-type">${r.type}</div>
-          </div>
-        </div>
-        <div class="card-price"><span class="currency">${currency}</span>${formatPrice(r.price)}</div>
-        <div class="card-meta">
-          ${r.tags.map(t => `<span class="meta-tag ${t.includes('min')||t.includes('fast')||t.includes('Prime') ? 'fast' : t.includes('OFF')||t.includes('Deal')||t.includes('Best') ? 'discount' : ''}">${t}</span>`).join('')}
-        </div>
-        <hr class="card-divider">
-        <div class="card-footer">
-          <div class="card-rating"><span class="stars">★</span> ${r.rating}</div>
-          <a class="book-btn" href="${r.url}" target="_blank" rel="noopener noreferrer">Visit →</a>
-        </div>
-      </div>`;
-  }).join('');
+  if (!name || !email || !password) return showErr('signupError', 'All fields are required');
+  if (password.length < 6) return showErr('signupError', 'Password must be at least 6 characters');
+  if (allUsers.find(u => u.email === email)) return showErr('signupError', 'Email already registered. Please login.');
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showErr('signupError', 'Enter a valid email address');
 
-  const bars = data.results.map(r => {
-    const pct = Math.round((r.price / maxP) * 100);
-    const isBest = r.price === minP;
-    return `
-      <div class="bar-row">
-        <div class="bar-label">${r.platform}</div>
-        <div class="bar-track">
-          <div class="bar-fill" style="width:${pct}%; background: linear-gradient(90deg, ${isBest ? '#10b981' : r.color+'99'}, ${isBest ? '#34d399' : r.color+'55'});">
-            ${isBest ? '🏆 Best' : ''}
-          </div>
-        </div>
-        <div class="bar-value">${currency}${formatPrice(r.price)}</div>
-      </div>`;
-  }).join('');
+  pendingUser = { name, email, password };
+  generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+  console.log('Generated OTP:', generatedOTP);
 
-  const html = `
-    <div style="animation: fadeUp 0.5s ease both;">
-      <div class="section-label">
-        <h2>${data.title}</h2>
-        <span class="pill">${data.results.length} platforms</span>
-      </div>
-      <div class="stats-row">
-        <div class="stat-card">
-          <div class="stat-label">Best Price</div>
-          <div class="stat-value green">${currency}${formatPrice(minP)}</div>
-          <div class="stat-sub">${data.results.find(r=>r.price===minP).platform}</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Max You'd Pay</div>
-          <div class="stat-value" style="color:var(--red)">${currency}${formatPrice(maxP)}</div>
-          <div class="stat-sub">${data.results.find(r=>r.price===maxP).platform}</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">You Can Save</div>
-          <div class="stat-value yellow">${currency}${formatPrice(savings)}</div>
-          <div class="stat-sub">by choosing wisely</div>
-        </div>
-      </div>
-      <div class="price-summary">
-        <h3>Price Breakdown</h3>
-        <div class="bar-chart">${bars}</div>
-      </div>
-      <div class="section-label">
-        <h2>All Options</h2>
-        <span class="pill">Tap to visit</span>
-      </div>
-      <div class="compare-grid">${cards}</div>
-      <div style="text-align:center; margin-top:40px;">
-        <button class="pop-chip" onclick="resetSearch()">← New Search</button>
-      </div>
-    </div>`;
-
-  document.getElementById('mainContent').innerHTML = html;
+  try {
+    await sendOTPEmail(email, name, generatedOTP);
+    document.getElementById('verifySubtitle').textContent = `Enter the 6-digit code sent to ${email}`;
+    const otpSentEl = document.getElementById('otpSent');
+    if (otpSentEl) {
+      otpSentEl.style.display = 'block';
+      otpSentEl.innerHTML = '✅ Code sent! Check your email (also check spam)';
+    }
+    startOTPTimer();
+    toggleAuth('verify');
+  } catch(e) {
+    console.error('Email error:', e);
+    showErr('signupError', 'Failed to send email. Check your EmailJS setup or try again later.');
+  }
 }
 
-function resetSearch() {
-  document.getElementById('searchInput').value = '';
-  document.getElementById('popularRow').style.display = 'flex';
-  document.getElementById('mainContent').innerHTML = `
-    <div class="empty-state" id="emptyState">
-      <div class="big-icon">🔍</div>
-      <h3>What are you looking for?</h3>
-      <p>Search any product, ride, or food item above to compare prices across platforms.</p>
-    </div>`;
+async function sendOTPEmail(email, name, otp) {
+  const SERVICE_ID = 'service_gjcasld';
+  const TEMPLATE_ID = 'template_pbxpqg4';
+  const PUBLIC_KEY = '0ra58-BTu4ENry2VB';
+
+  const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      service_id: SERVICE_ID,
+      template_id: TEMPLATE_ID,
+      user_id: PUBLIC_KEY,
+      template_params: {
+        to_email: email,
+        to_name: name,
+        otp_code: otp,
+        otp_message: `Your Comparo verification code is: ${otp}`
+      }
+    })
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    console.error('EmailJS API Error:', error);
+    throw new Error('Failed to send OTP email');
+  }
+
+  const result = await response.json();
+  console.log('✅ Email sent successfully!');
+  return result;
+}
+
+function startOTPTimer() {
+  if (otpTimer) clearInterval(otpTimer);
+
+  otpTimeRemaining = OTP_TIMEOUT;
+  const resendBtn = document.getElementById('resendOTPBtn');
+  const timerDisplay = document.getElementById('otpTimerDisplay');
+
+  if (resendBtn) {
+    resendBtn.disabled = true;
+    resendBtn.style.opacity = '0.5';
+    resendBtn.style.cursor = 'not-allowed';
+  }
+
+  otpTimer = setInterval(() => {
+    otpTimeRemaining--;
+
+    if (timerDisplay) {
+      if (otpTimeRemaining > 0) {
+        timerDisplay.textContent = `Resend in ${otpTimeRemaining}s`;
+      } else {
+        timerDisplay.textContent = '';
+      }
+    }
+
+    if (otpTimeRemaining <= 0) {
+      clearInterval(otpTimer);
+      otpTimer = null;
+
+      if (resendBtn) {
+        resendBtn.disabled = false;
+        resendBtn.style.opacity = '1';
+        resendBtn.style.cursor = 'pointer';
+      }
+    }
+  }, 1000);
+}
+
+async function resendOTP() {
+  if (otpTimeRemaining > 0 || !pendingUser) return;
+
+  generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+  console.log('New OTP generated:', generatedOTP);
+
+  const resendBtn = document.getElementById('resendOTPBtn');
+  const originalText = resendBtn.textContent;
+  
+  try {
+    resendBtn.disabled = true;
+    resendBtn.textContent = 'Sending...';
+
+    await sendOTPEmail(pendingUser.email, pendingUser.name, generatedOTP);
+
+    const otpSentEl = document.getElementById('otpSent');
+    if (otpSentEl) {
+      otpSentEl.style.display = 'block';
+      otpSentEl.innerHTML = '✅ New code sent! Check your email';
+    }
+
+    document.querySelectorAll('.otp-box').forEach(box => box.value = '');
+    startOTPTimer();
+    resendBtn.textContent = originalText;
+
+    setTimeout(() => {
+      if (otpSentEl) otpSentEl.style.display = 'none';
+    }, 3000);
+
+  } catch(e) {
+    console.error('Resend OTP error:', e);
+    resendBtn.textContent = originalText;
+    showErr('otpError', '❌ Failed to resend code. Please try again.');
+  }
+}
+
+function otpNext(input, index) {
+  const boxes = document.querySelectorAll('.otp-box');
+  input.value = input.value.replace(/[^0-9]/g, '');
+  
+  if (input.value.length === 1 && index < 5) {
+    boxes[index + 1].focus();
+  }
+
+  const enteredOTP = Array.from(boxes).map(b => b.value).join('');
+  if (enteredOTP.length === 6) {
+    verifyOTP();
+  }
+}
+
+function verifyOTP() {
+  const boxes = document.querySelectorAll('.otp-box');
+  const entered = Array.from(boxes).map(b => b.value).join('');
+
+  if (entered.length !== 6) return showErr('otpError', 'Enter all 6 digits');
+  if (entered !== generatedOTP) return showErr('otpError', '❌ Wrong code. Please try again.');
+
+  document.getElementById('otpError').style.display = 'none';
+  if (otpTimer) clearInterval(otpTimer);
+
+  const newUser = {
+    id: Date.now(),
+    name: pendingUser.name,
+    email: pendingUser.email,
+    password: pendingUser.password,
+    createdAt: new Date().toISOString(),
+    verified: true,
+    searches: [],
+    alerts: []
+  };
+
+  allUsers.push(newUser);
+  localStorage.setItem('comparo_users', JSON.stringify(allUsers));
+
+  currentUser = newUser;
+  localStorage.setItem('comparo_session', JSON.stringify(currentUser));
+
+  document.getElementById('authModal').style.display = 'none';
+  updateNavUI();
+
+  console.log('✅ Account created successfully!');
+  alert('Welcome to Comparo! Your account has been verified.');
+}
+
+function handleLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+
+  if (!email || !password) return showErr('loginError', 'All fields are required');
+
+  if (email === ADMIN.email && password === ADMIN.password) {
+    currentUser = ADMIN;
+    localStorage.setItem('comparo_session', JSON.stringify(currentUser));
+    document.getElementById('authModal').style.display = 'none';
+    updateNavUI();
+    return;
+  }
+
+  const user = allUsers.find(u => u.email === email && u.password === password);
+  if (!user) return showErr('loginError', '❌ Wrong email or password');
+
+  currentUser = user;
+  localStorage.setItem('comparo_session', JSON.stringify(currentUser));
+  document.getElementById('authModal').style.display = 'none';
+  updateNavUI();
+}
+
+function handleLogout() {
+  currentUser = null;
+  localStorage.removeItem('comparo_session');
+  if (otpTimer) clearInterval(otpTimer);
+  document.getElementById('navRight').style.display = 'none';
+  document.getElementById('authModal').style.display = 'flex';
+  toggleAuth('login');
+}
+
+function updateNavUI() {
+  if (!currentUser) return;
+  const navRight = document.getElementById('navRight');
+  if (navRight) navRight.style.display = 'flex';
+  const userName = document.getElementById('userName');
+  if (userName) userName.textContent = currentUser.name;
+  const userAvatar = document.getElementById('userAvatar');
+  if (userAvatar) userAvatar.textContent = currentUser.name.charAt(0).toUpperCase();
+}
+
+function switchTab(name, btn) {
+  if (btn) {
+    const buttons = document.querySelectorAll('.nav-center button');
+    buttons.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  console.log('Switched to tab:', name);
 }
